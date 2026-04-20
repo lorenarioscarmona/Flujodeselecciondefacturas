@@ -3,18 +3,10 @@ import { useNavigate, useLocation } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../components/ui/dialog";
 import { Factura } from "../types/factura";
 import { calcularFinanciamiento } from "../utils/calculos";
 import { formatCurrency, formatDate } from "../utils/formatters";
-import { FileText, ArrowLeft, CheckCircle, DollarSign, Percent, Tag } from "lucide-react";
+import { FileText, ArrowLeft, DollarSign, Percent, Tag } from "lucide-react";
 import { toast } from "sonner";
 import { Separator } from "../components/ui/separator";
 
@@ -25,7 +17,6 @@ export function ResumenConfirmacion() {
   
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   // Si no hay facturas, redirigir al dashboard
   useEffect(() => {
@@ -53,17 +44,12 @@ export function ResumenConfirmacion() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     setIsProcessing(false);
-    setShowSuccessDialog(true);
+    navigate("/");
+    toast.success("Tu operación ha sido confirmada exitosamente");
   };
 
   const handleVolver = () => {
     navigate("/");
-  };
-
-  const handleFinalizarExito = () => {
-    setShowSuccessDialog(false);
-    navigate("/");
-    toast.success("Tu operación ha sido confirmada exitosamente");
   };
 
   return (
@@ -243,56 +229,6 @@ export function ResumenConfirmacion() {
           </Card>
         </div>
       </main>
-
-      {/* Dialog de éxito */}
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <div className="flex justify-center mb-4">
-              <div className="size-16 bg-primary/10 rounded-full flex items-center justify-center">
-                <CheckCircle className="size-10 text-primary" />
-              </div>
-            </div>
-            <DialogTitle className="text-center text-xl">
-              ¡Operación Confirmada!
-            </DialogTitle>
-            <DialogDescription className="text-center">
-              Tu operación de factoring ha sido procesada exitosamente.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">ID Operación:</span>
-                <span className="font-medium text-foreground">
-                  OP-{new Date().getTime().toString().slice(-8)}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Facturas:</span>
-                <span className="font-medium text-foreground">
-                  {facturasSeleccionadas.length}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium text-foreground">Monto líquido:</span>
-                <span className="font-bold text-primary">
-                  {formatCurrency(calculo.totalLiquido)}
-                </span>
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground text-center">
-              El monto será depositado en tu cuenta bancaria registrada dentro
-              de 24 a 48 horas hábiles.
-            </p>
-          </div>
-          <DialogFooter>
-            <Button onClick={handleFinalizarExito} className="w-full">
-              Volver al Dashboard
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
